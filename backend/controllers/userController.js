@@ -46,7 +46,7 @@ const loginUser = async (req, res) => {
    try {
       const { username , password } = req.body
       const user = await User.findOne({username})
-      const isPasswordCorrect = await bcrypt.compare(password , user.password)
+      const isPasswordCorrect = await bcrypt.compare(password , user?.password || "")
 
       if (!user || !isPasswordCorrect) return res.status(400).json({message : "Invalid username or password"})
       generateTokenAndSetCookie(user._id, res)
@@ -65,4 +65,27 @@ const loginUser = async (req, res) => {
    }    
 }
 
-export { signupUser , loginUser }
+const logoutUser = async (req, res) =>{
+     try {
+         res.cookie("jwt","",{maxAge:1})
+         res.status(200).json({message : "User logged out successfully"})
+     } catch (error) {
+      res.status(500).json({ message: error.message })
+      console.log("Error in logoutUser : ", error.message);
+
+   }
+}
+
+const followUnFollowUser = async (req, res) => {
+   try {
+      const { id } = req.params;
+      const userToModify = await User.findById(id)
+      const currentUser = await User.findById(req.user._id)
+   } catch (error) {
+      res.status(500).json({ message: error.message })
+      console.log("Error in logoutUser : ", error.message);
+
+   }
+}
+
+export { signupUser , loginUser , logoutUser , followUnFollowUser }
