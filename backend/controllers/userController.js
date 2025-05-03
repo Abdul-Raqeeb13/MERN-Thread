@@ -111,12 +111,12 @@ const followUnFollowUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
    try {
-      const {name, username, email, password, profilePic, bio} = req.body
+      const { name, username, email, password, profilePic, bio } = req.body
       const userId = req.user._id // login user
       let user = await User.findById(userId)
 
-      if(req.params.id !== userId.toString()) return res.status(400).json({message : "You can not update other user's profile"})
-      if (!user) return res.status(400).json({message : "User not found"})
+      if (req.params.id !== userId.toString()) return res.status(400).json({ message: "You can not update other user's profile" })
+      if (!user) return res.status(400).json({ message: "User not found" })
       if (password) {
          const salt = await bcrypt.genSalt(10)
          const hashPassword = await bcrypt.hash(password, salt);
@@ -130,7 +130,7 @@ const updateUser = async (req, res) => {
       user.bio = bio || user.bio
 
       user = await user.save();
-      res.status(200).json({message : "Profile updated Successfully", user})
+      res.status(200).json({ message: "Profile updated Successfully", user })
    } catch (error) {
       res.status(500).json({ message: error.message })
       console.log("Error in updateUser : ", error.message);
@@ -138,4 +138,16 @@ const updateUser = async (req, res) => {
 
    }
 }
-export { signupUser, loginUser, logoutUser, followUnFollowUser, updateUser }
+
+const getUserProfile = async (req, res) => {
+   try {
+      const {username} = req.params;
+      const user = await User.findOne({username}).select("-password").select("-updatedAt")
+      if(!user) return res.status(400).json({message : "User not found"})
+      res.status(200).json(user)
+   } catch (error) {
+      res.status(500).json({ message: error.message })
+      console.log("Error in getUserProfile : ", error.message);
+   }
+}
+export { signupUser, loginUser, logoutUser, followUnFollowUser, updateUser, getUserProfile }
