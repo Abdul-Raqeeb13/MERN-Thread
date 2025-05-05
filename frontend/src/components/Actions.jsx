@@ -19,6 +19,7 @@ import {
 // import userAtom from "../atoms/userAtom";
 // import useShowToast from "../hooks/useShowToast";
 // import postsAtom from "../atoms/postsAtom";
+import React from "react";
 
 const Actions = ({ liked, setLiked }) => {
 	// const user = useRecoilValue(userAtom);
