@@ -7,7 +7,7 @@ const signupUser = async (req, res) => {
       const { name, username, email, password } = req.body
       const user = await User.findOne({ $or: [{ email }, { username }] })
       if (user) {
-         return res.status(400).json({ message: "User already exist" })
+         return res.status(400).json({ error: "User already exist" })
       }
 
       const salt = await bcrypt.genSalt(10)
@@ -31,12 +31,12 @@ const signupUser = async (req, res) => {
          })
       }
       else {
-         res.status(400).json({ message: "Invalid user data" })
+         res.status(400).json({ error: "Invalid user data" })
       }
 
 
    } catch (error) {
-      res.status(500).json({ message: error.message })
+      res.status(500).json({ error: error.message })
       console.log("Error in signupUser : ", error.message);
 
    }
@@ -48,7 +48,7 @@ const loginUser = async (req, res) => {
       const user = await User.findOne({ username })
       const isPasswordCorrect = await bcrypt.compare(password, user?.password || "")
 
-      if (!user || !isPasswordCorrect) return res.status(400).json({ message: "Invalid username or password" })
+      if (!user || !isPasswordCorrect) return res.status(400).json({ error: "Invalid username or password" })
       generateTokenAndSetCookie(user._id, res)
 
       res.status(200).json({
@@ -59,7 +59,7 @@ const loginUser = async (req, res) => {
       })
 
    } catch (error) {
-      res.status(500).json({ message: error.message })
+      res.status(500).json({ error: error.message })
       console.log("Error in loginUser : ", error.message);
 
    }
@@ -70,7 +70,7 @@ const logoutUser = async (req, res) => {
       res.cookie("jwt", "", { maxAge: 1 })
       res.status(200).json({ message: "User logged out successfully" })
    } catch (error) {
-      res.status(500).json({ message: error.message })
+      res.status(500).json({ error: error.message })
       console.log("Error in logoutUser : ", error.message);
 
    }
@@ -84,9 +84,9 @@ const followUnFollowUser = async (req, res) => {
 
 
       if (id == req.user._id.toString()) return res.status(400).json
-         ({ message: "You cannot follow/unfollow yourself" })
+         ({ error: "You cannot follow/unfollow yourself" })
 
-      if (!userToModify || !currentUser) return res.status(400).json({ message: "User not found" })
+      if (!userToModify || !currentUser) return res.status(400).json({ error: "User not found" })
 
       const isFollowing = currentUser.following.includes(id)
 
@@ -103,7 +103,7 @@ const followUnFollowUser = async (req, res) => {
       }
 
    } catch (error) {
-      res.status(500).json({ message: error.message })
+      res.status(500).json({ error: error.message })
       console.log("Error in FollowUnFollowUser : ", error.message);
 
    }
@@ -115,8 +115,8 @@ const updateUser = async (req, res) => {
       const userId = req.user._id // login user
       let user = await User.findById(userId)
 
-      if (req.params.id !== userId.toString()) return res.status(400).json({ message: "You can not update other user's profile" })
-      if (!user) return res.status(400).json({ message: "User not found" })
+      if (req.params.id !== userId.toString()) return res.status(400).json({ error: "You can not update other user's profile" })
+      if (!user) return res.status(400).json({ error: "User not found" })
       if (password) {
          const salt = await bcrypt.genSalt(10)
          const hashPassword = await bcrypt.hash(password, salt);
@@ -132,7 +132,7 @@ const updateUser = async (req, res) => {
       user = await user.save();
       res.status(200).json({ message: "Profile updated Successfully", user })
    } catch (error) {
-      res.status(500).json({ message: error.message })
+      res.status(500).json({ error: error.message })
       console.log("Error in updateUser : ", error.message);
 
 
@@ -143,10 +143,10 @@ const getUserProfile = async (req, res) => {
    try {
       const {username} = req.params;
       const user = await User.findOne({username}).select("-password").select("-updatedAt")
-      if(!user) return res.status(400).json({message : "User not found"})
+      if(!user) return res.status(400).json({error : "User not found"})
       res.status(200).json(user)
    } catch (error) {
-      res.status(500).json({ message: error.message })
+      res.status(500).json({ error: error.message })
       console.log("Error in getUserProfile : ", error.message);
    }
 }

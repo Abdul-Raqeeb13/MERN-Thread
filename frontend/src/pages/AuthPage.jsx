@@ -12,8 +12,7 @@ const AuthPage = () => {
 
   return (
     <>
-    <LoginCard/>
-      {/* {authScreenState === "signup" ? <SignupCard /> : <LoginCard />} */}
+      {authScreenState === "login" ? <LoginCard /> : <SignupCard />}
     </>
   );
 }
