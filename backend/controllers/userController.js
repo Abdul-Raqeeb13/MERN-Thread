@@ -27,7 +27,10 @@ const signupUser = async (req, res) => {
             _id: newUser._id,
             name: newUser.name,
             username: newUser.username,
-            email: newUser.email
+            email: newUser.email,
+            bio : newUser.bio,
+            profilePic : newUser.profilePic
+
          })
       }
       else {
@@ -56,6 +59,8 @@ const loginUser = async (req, res) => {
          username: user.username,
          name: user.name,
          email: user.email,
+         bio : user.bio,
+         profilePic : user.profilePic
       })
 
    } catch (error) {
